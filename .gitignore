@@ -1,2 +1,4 @@
 .vscode/
+code/__pycache__/
 .env
+AzureIoTSamples.code-workspace

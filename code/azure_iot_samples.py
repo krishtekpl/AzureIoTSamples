@@ -1,33 +1,8 @@
-# Licensed under the MIT license.
-# Created based on example provided here
-# https://github.com/MicrosoftLearning/AZ-220-Microsoft-Azure-IoT-Developer.git
-
-import os
-import asyncio
+import sys
 import random
 import datetime
-import sys
-from azure.iot.device.aio import IoTHubDeviceClient
+import asyncio
 from azure.iot.device import Message
-
-# The device connection authenticates your device to your IoT hub.
-# The connection string for a device should never be stored in code.
-# For the sake of simplicity we're using an environment
-# variable here. If you created the environment variable with the IDE running,
-# stop and restart the IDE to pick up the environment variable.
-# If no environment variable is created, program
-# will prompt you to provide the connection string.
-#
-# You can use the Azure CLI to find the connection string:
-#     az iot hub device-identity connection-string show
-#                               --hub-name {YourIoTHubName}
-#                               --device-id MyNodeDevice
-#                               --output table
-
-CONNECTION_STRING = os.getenv("IOTHUB_DEVICE_CONNECTION_STRING")
-
-if CONNECTION_STRING is None:
-    CONNECTION_STRING = input("Please provide the connection string: ")
 
 
 # This class represents a sensor
@@ -83,7 +58,8 @@ async def send_device_to_coud_messages_async(client,
     i = 0
     print("IoT Hub device sending periodic messages")
 
-    await client.connect()
+    if not client.connected:
+        await client.connect()
 
     while i < number_of_messages or number_of_messages == 0:
         sensor = EnvironmentSensor()
@@ -108,18 +84,20 @@ async def send_device_to_coud_messages_async(client,
         i += 1
 
 
-def main():
-    number_of_messages = 0
-    telemetry_delay = 1
+# This function prompt user about number of messages to be send
+# and telemetry delay
+def initial_parameters():
+    parameters = {}
+    parameters['number_of_messages'] = 0
+    parameters['telemetry_delay'] = 1
 
-    print("IoT Hub Quickstart #1 - Simulated device")
     number_of_messages_prompt = input("Please provide the number of messages "
                                       "to send (0 or Enter for unlimited): ")
 
     if number_of_messages_prompt.isdigit():
-        number_of_messages = int(number_of_messages_prompt)
+        parameters['number_of_messages'] = int(number_of_messages_prompt)
     elif len(number_of_messages_prompt) == 0:
-        number_of_messages = 0
+        parameters['number_of_messages'] = 0
     else:
         print(f"{number_of_messages_prompt} is not a number")
         sys.exit(1)
@@ -128,32 +106,11 @@ def main():
                                    "telemetry messages (default 2): ")
 
     if telemetry_delay_prompt.isdigit():
-        telemetry_delay = int(telemetry_delay_prompt)
+        parameters['telemetry_delay'] = int(telemetry_delay_prompt)
     elif len(telemetry_delay_prompt) == 0:
-        telemetry_delay = 2
+        parameters['telemetry_delay'] = 2
     else:
         print(f"{telemetry_delay_prompt} is not a number")
         sys.exit(1)
 
-    device_client = IoTHubDeviceClient.create_from_connection_string(
-                                                            CONNECTION_STRING)
-
-    loop = asyncio.get_event_loop()
-
-    try:
-        # Run the sample in the event loop
-        loop.run_until_complete(
-                send_device_to_coud_messages_async(device_client,
-                                                   number_of_messages,
-                                                   telemetry_delay))
-    except KeyboardInterrupt:
-        print("IoTHubClient sample stopped by user")
-    finally:
-        # Upon application exit, shut down the client
-        print("Shutting down IoTHubClient")
-        loop.run_until_complete(device_client.shutdown())
-        loop.close()
-
-
-if __name__ == '__main__':
-    main()
+    return parameters
