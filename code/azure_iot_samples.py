@@ -5,10 +5,11 @@ import asyncio
 from azure.iot.device import Message
 
 
-# This class represents a sensor
-# real-world sensors would contain code to initialize
-# the device or devices and maintain internal state
 class EnvironmentSensor:
+    """This class represents a sensor
+       real-world sensors would contain code to initialize
+       the device or devices and maintain internal state
+    """
     def __init__(self):
         self.min_temperature = 20
         self.min_humidity = 60
@@ -33,8 +34,15 @@ class EnvironmentSensor:
         return coordinates
 
 
-# This function creates the payload to be sent to IoT Hub
 def create_payload(sensor):
+    """This function creates the payload to be sent to IoT Hub
+
+    Args:
+        sensor (EnvironmentSensor): Virtual IoT sensor
+
+    Returns:
+        Message: Formatted payload
+    """
     msg_txt = '''{{"temperature":{temperature},"humidity":{humidity},''' \
               '''"pressure":{pressure},''' \
               '''"location":{{"latitude":{latitude},''' \
@@ -50,11 +58,18 @@ def create_payload(sensor):
     return message
 
 
-# This function sends the telemetry to IoT Hub in the loop
-# time interval is specified in telemetry_delay (in seconds)
 async def send_device_to_coud_messages_async(client,
                                              number_of_messages,
                                              telemetry_delay):
+    """This function sends the telemetry to IoT Hub in the loop
+       time interval is specified in telemetry_delay
+
+    Args:
+        client (IoTHubDeviceClient): A device client that connects
+                                     to an Azure IoT Hub instance
+        number_of_messages (int): number of messages to be sent (0=unlimited)
+        telemetry_delay (int): time interval between messages
+    """
     i = 0
     print("IoT Hub device sending periodic messages")
 
@@ -84,9 +99,13 @@ async def send_device_to_coud_messages_async(client,
         i += 1
 
 
-# This function prompt user about number of messages to be send
-# and telemetry delay
 def initial_parameters():
+    """This function prompt user about number of messages to be send
+       and telemetry delay
+
+    Returns:
+        dict: Number of messages to be sent and time interval between them
+    """
     parameters = {}
     parameters['number_of_messages'] = 0
     parameters['telemetry_delay'] = 1

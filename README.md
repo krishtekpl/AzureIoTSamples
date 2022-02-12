@@ -62,8 +62,8 @@ Before starting the program, perform the following steps (apart from creating Az
 For security reasons it is not recommended to write the connection details directly to the program file. You can export it to the environment variable using following command:
 ```cmd/sh
 export DPS_SCOPE_ID="{your DPS Scope ID}"
-export X509_CERT_FILE="{path}.cert.pem"
-export X509_KEY_FILE="{path}.key.pem"
+export X509_CERT_PATH="{path_to_the_folder with {Device_ID}.cert.pem file"
+export X509_KEY_PATH="{path_to_the_folder with {Device_ID}.key.pem file}"
 export X509_PASS_PHRASE="{certificate pass phrase}"
 ```
-> **NOTE**: It is important to use ```*.cert.pem``` and ```*.key.pem``` files. Please don't use ```*.cert.pfx``` files.
+**NOTE**: You will be prompted to provide Device ID to be provisioned and files with certificate and key should be named as ```{Device_ID}.cert.pem``` and ```{Device_ID}.key.pem```. Please don't use ```*.cert.pfx``` files.
